@@ -1,39 +1,75 @@
 <template>
-  <li v-for="friend in friends" v-bind:key="friend.id">
-    <h2>{{ friend.name }}</h2>
-    <button @click="toggleDetails">Show Details</button>
+  <!-- <li v-for="friend in friends" :friend="friend" :key="friend.id"> -->
+  <li>
+    <h2>{{ name }} {{ isFavorite ? "(Favorite)" : "" }}</h2>
+    <button @click="toggleFavorite">
+      {{ friendsIsFavorite ? "Remove" : "Add" }} Favorite
+    </button>
+    <br />
+    <br />
+    <button @click="toggleDetails">
+      {{ detailsAreVisible ? "Hide" : "Show" }} Details
+    </button>
     <ul v-if="detailsAreVisible">
-      <li><strong>Phone:</strong> {{ friend.phone }}</li>
-      <li><strong>Email:</strong> {{ friend.email }}</li>
+      <li><strong>Phone:</strong> {{ phoneNumber }}</li>
+      <li><strong>Email:</strong> {{ email }}</li>
     </ul>
   </li>
 </template>
 
 <script>
 export default {
+  // props: ["friend", "name", "phoneNumber", "email", "isFavorite"],
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
+    emailAddress: {
+      type: String,
+      required: true,
+    },
+    isFavorite: {
+      type: Boolean,
+      required: false,
+      default: false,
+      // validator: function (value) {
+      //   return value === "1" || value === "0";
+      // },
+    },
+  },
+  //emits: ["toggle-favorite"],
+  // emits: {
+  //   "toggle-favorite": function (id) {
+  //     if (id) {
+  //       return true;
+  //     } else {
+  //       console.warn("Id is lost");
+  //       return false;
+  //     }
+  //   },
+  // },
   data() {
     return {
-        detailsAreVisible:false,
-      friends: [
-        {
-          id: "manuel",
-          name: "Manuel Lorenz",
-          phone: "0123 456 78 90",
-          email: "manuel@localhost.com",
-        },
-        {
-          id: "julie",
-          name: "Julie Jones",
-          phone: "0987 654 32 10",
-          email: "julie@localhost.com",
-        },
-      ],
+      detailsAreVisible: false,
     };
   },
   methods: {
     toggleDetails() {
-        this.detailsAreVisible = !this.detailsAreVisible
-    }
-  }
+      this.detailsAreVisible = !this.detailsAreVisible;
+    },
+    toggleFavorite() {
+      this.$emit("toggle-favorite", this.id);
+      //this.friendsIsFavorite = !this.friendsIsFavorite;
+    },
+  },
 };
 </script>
