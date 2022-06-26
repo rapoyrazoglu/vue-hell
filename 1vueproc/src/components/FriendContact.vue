@@ -12,8 +12,11 @@
     </button>
     <ul v-if="detailsAreVisible">
       <li><strong>Phone:</strong> {{ phoneNumber }}</li>
-      <li><strong>Email:</strong> {{ email }}</li>
+      <li><strong>Email:</strong> {{ emailAddress }}</li>
     </ul>
+    <br>
+    <br>
+    <button @click="$emit('delete-contact', id)">Delete Contact</button>
   </li>
 </template>
 
@@ -46,7 +49,7 @@ export default {
       // },
     },
   },
-  //emits: ["toggle-favorite"],
+  emits: ["toggle-favorite",'delete'],
   // emits: {
   //   "toggle-favorite": function (id) {
   //     if (id) {
