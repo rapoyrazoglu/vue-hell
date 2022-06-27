@@ -60,10 +60,9 @@ export default {
       };
       this.friends.push(newFriendContact);
     },
-    deleteContact(friendId){
-this.friends =this.friends.filter(friend => friend.id !== friendId)
-
-    }
+    deleteContact(friendId) {
+      this.friends = this.friends.filter((friend) => friend.id !== friendId);
+    },
   },
 };
 </script>
