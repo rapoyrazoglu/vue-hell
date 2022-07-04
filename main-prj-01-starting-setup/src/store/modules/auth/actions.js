@@ -2,7 +2,7 @@ export default {
   login() {},
   async signup(context, payload) {
     const response = await fetch(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyC2mt0aTunzoUR1V3G_eOVa7U9BwEv7q5Y',
+      'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC2mt0aTunzoUR1V3G_eOVa7U9BwEv7q5Y',
       {
         method: 'POST',
         body: JSON.stringify({
@@ -12,18 +12,21 @@ export default {
         }),
       }
     );
+
     const responseData = await response.json();
+
     if (!response.ok) {
       console.log(responseData);
       const error = new Error(
-        responseData.message || 'Failed to authenticate!'
+        responseData.message || 'Failed to authenticate.'
       );
       throw error;
     }
+
     console.log(responseData);
     context.commit('setUser', {
       token: responseData.idToken,
-      userId: responseData.loacId,
+      userId: responseData.localId,
       tokenExpiration: responseData.expiresIn,
     });
   },

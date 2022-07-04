@@ -6,13 +6,9 @@ export default {
   namespaced: true,
   state() {
     return {
-      state() {
-        return {
-          userId: null,
-          token: null,
-          tokenExpiration: null,
-        };
-      },
+      userId: null,
+      token: null,
+      tokenExpiration: null,
     };
   },
   mutations,

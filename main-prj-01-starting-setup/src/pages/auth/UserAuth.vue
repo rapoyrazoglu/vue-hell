@@ -1,27 +1,32 @@
 <template>
-  <base-card>
-    <form @submit.prevent="submitForm">
-      <div class="form-control">
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model.trim="email" />
-      </div>
-      <div class="form-control">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model.trim="password" />
-      </div>
-      <p v-if="!formIsValid">
-        Please enter a valid password (must be at least 6 characters long).
-      </p>
-      <!-- :mode="mode === 'login' ? '' : 'flat'" -->
-      <base-button @click="switchAuthMode">{{
-        switchButtonCaption
-      }}</base-button>
-      <!-- :mode="mode === 'login' ? 'flat' : ''" -->
-      <base-button type="button" mode="flat" @click="switchAuthMode">
-        {{ switchModeButtonCaption }}
-      </base-button>
-    </form>
-  </base-card>
+  <div>
+    <base-dialog :show="!!error" title="An error occured" @close="handleError">
+      <p>{{ error }}</p>
+    </base-dialog>
+    <base-dialog fixed :show="isLoaging" title="Authenticating..">
+      <base-spinner></base-spinner>
+    </base-dialog>
+    <base-card>
+      <form @submit.prevent="submitForm">
+        <div class="form-control">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" v-model.trim="email" />
+        </div>
+        <div class="form-control">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model.trim="password" />
+        </div>
+        <p v-if="!formIsValid">
+          Please enter a valid email and password (must be at least 6 characters
+          long).
+        </p>
+        <base-button>{{ submitButtonCaption }}</base-button>
+        <base-button type="button" mode="flat" @click="switchAuthMode">{{
+          switchModeButtonCaption
+        }}</base-button>
+      </form>
+    </base-card>
+  </div>
 </template>
 
 <script>
@@ -32,11 +37,12 @@ export default {
       password: '',
       formIsValid: true,
       mode: 'login',
-      animationStart: false,
+      isLoading: false,
+      error: null,
     };
   },
   computed: {
-    switchButtonCaption() {
+    submitButtonCaption() {
       if (this.mode === 'login') {
         return 'Login';
       } else {
@@ -51,25 +57,31 @@ export default {
       }
     },
   },
-
   methods: {
-    submitForm() {
+    async submitForm() {
+      this.formIsValid = true;
       if (
         this.email === '' ||
         !this.email.includes('@') ||
         this.password.length < 6
       ) {
-        this.formIsValid = false;
+        this.formIsValid = true;
         return;
       }
-      if (this.mode === 'login') {
-        //...
-      } else {
-        this.$store.dispatch('signup', {
-          email: this.email,
-          password: this.password,
-        });
+      this.isLoading = true;
+      try {
+        if (this.mode === 'login') {
+          // ...
+        } else {
+          await this.$store.dispatch('auth/signup', {
+            email: this.email,
+            password: this.password,
+          });
+        }
+      } catch (err) {
+        this.err = err.message || 'Failed to authenticate, try again later.';
       }
+      this.isLoading = false;
     },
     switchAuthMode() {
       if (this.mode === 'login') {
@@ -77,6 +89,9 @@ export default {
       } else {
         this.mode = 'login';
       }
+    },
+    handleError() {
+      this.error = null;
     },
   },
 };
