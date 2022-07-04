@@ -1,9 +1,9 @@
 <template>
   <div>
-    <base-dialog :show="!!error" title="An error occured" @close="handleError">
+    <base-dialog :show="!!error" title="An error occurred" @close="handleError">
       <p>{{ error }}</p>
     </base-dialog>
-    <base-dialog fixed :show="isLoaging" title="Authenticating..">
+    <base-dialog :show="isLoading" title="Authenticating..." fixed>
       <base-spinner></base-spinner>
     </base-dialog>
     <base-card>
@@ -65,22 +65,29 @@ export default {
         !this.email.includes('@') ||
         this.password.length < 6
       ) {
-        this.formIsValid = true;
+        this.formIsValid = false;
         return;
       }
+
       this.isLoading = true;
+
+      const actionPayload = {
+        email: this.email,
+        password: this.password,
+      };
+
       try {
         if (this.mode === 'login') {
-          // ...
+          await this.$store.dispatch('login', actionPayload);
         } else {
-          await this.$store.dispatch('auth/signup', {
-            email: this.email,
-            password: this.password,
-          });
+          await this.$store.dispatch('signup', actionPayload);
         }
+        const redirectUrl = '/' + (this.$route.query.redirect || 'coaches');
+        this.$router.replace(redirectUrl);
       } catch (err) {
-        this.err = err.message || 'Failed to authenticate, try again later.';
+        this.error = err.message || 'Failed to authenticate, try later.';
       }
+
       this.isLoading = false;
     },
     switchAuthMode() {
