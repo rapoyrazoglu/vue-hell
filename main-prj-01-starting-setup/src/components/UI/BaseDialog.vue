@@ -1,21 +1,23 @@
 <template>
   <teleport to="body">
     <div v-if="show" @click="tryClose" class="backdrop"></div>
-    <dialog open v-if="show">
-      <header>
-        <slot name="header">
-          <h2>{{ title }}</h2>
-        </slot>
-      </header>
-      <section>
-        <slot></slot>
-      </section>
-      <menu v-if="!fixed">
-        <slot name="actions">
-          <base-button @click="tryClose">Close</base-button>
-        </slot>
-      </menu>
-    </dialog>
+    <transition name="dialog">
+      <dialog open v-if="show">
+        <header>
+          <slot name="header">
+            <h2>{{ title }}</h2>
+          </slot>
+        </header>
+        <section>
+          <slot></slot>
+        </section>
+        <menu v-if="!fixed">
+          <slot name="actions">
+            <base-button @click="tryClose">Close</base-button>
+          </slot>
+        </menu>
+      </dialog>
+    </transition>
   </teleport>
 </template>
 
@@ -94,6 +96,24 @@ menu {
   display: flex;
   justify-content: flex-end;
   margin: 0;
+}
+
+.dialog-enter-active {
+  animation: dialog 0.4s ease-out;
+}
+.dialog-leave-active {
+  animation: dialog 0.4s ease-in reverse;
+}
+
+@keyframes dialog {
+  from {
+    opacity: 0;
+    transform: translateZ(-30px) scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0) scale(1);
+  }
 }
 
 @media (min-width: 768px) {

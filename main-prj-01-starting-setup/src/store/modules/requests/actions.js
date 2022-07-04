@@ -5,7 +5,7 @@ export default {
       message: payload.message,
     };
     const response = await fetch(
-      `https://vue-coach-app-f2ed4-default-rtdb.europe-west1.firebasedatabase.app/requests/${payload.coachId}.json`,
+      `https://vue-coach-app-f2ed4-default-rtdb.europe-west1.firebasedatabase.app//requests/${payload.coachId}.json`,
       {
         method: 'POST',
         body: JSON.stringify(newRequest),
@@ -14,8 +14,6 @@ export default {
 
     const responseData = await response.json();
 
-    newRequest.id = responseData.name;
-    newRequest.coachId = payload.coachId;
     if (!response.ok) {
       const error = new Error(
         responseData.message || 'Failed to send request.'
@@ -23,10 +21,13 @@ export default {
       throw error;
     }
 
-    context.commit('addRequest', { newRequest });
+    newRequest.id = responseData.name;
+    newRequest.coachId = payload.coachId;
+
+    context.commit('addRequest', newRequest);
   },
   async fetchRequests(context) {
-    const coachId = context.rootGetter.userId;
+    const coachId = context.rootGetters.userId;
     const response = await fetch(
       `https://vue-coach-app-f2ed4-default-rtdb.europe-west1.firebasedatabase.app/requests/${coachId}.json`
     );
@@ -34,7 +35,7 @@ export default {
 
     if (!response.ok) {
       const error = new Error(
-        responseData.message || 'Failed to fetch requests!'
+        responseData.message || 'Failed to fetch requests.'
       );
       throw error;
     }
